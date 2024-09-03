@@ -8,10 +8,10 @@ function Square({ value, onSquareClick }) {
   );
 }
 
-function Board({ xIsNext, squares, onPlay }) {
+function Board({ xIsNext, squares, onPlay, onRestart }) {
   function handleClick(i) {
     if (calculateWinner(squares) || squares[i]) {
-      return;
+      return; // Ignore click if there's already a winner or square is occupied
     }
     const nextSquares = squares.slice();
     if (xIsNext) {
@@ -19,7 +19,7 @@ function Board({ xIsNext, squares, onPlay }) {
     } else {
       nextSquares[i] = "O";
     }
-    onPlay(nextSquares);
+    onPlay(nextSquares); // Update board state
   }
 
   const winner = calculateWinner(squares);
@@ -48,6 +48,11 @@ function Board({ xIsNext, squares, onPlay }) {
         <Square value={squares[7]} onSquareClick={() => handleClick(7)} />
         <Square value={squares[8]} onSquareClick={() => handleClick(8)} />
       </div>
+      {winner && (
+        <button className="restart-button" onClick={onRestart}>
+          Restart Game
+        </button>
+      )}
     </>
   );
 }
@@ -66,6 +71,11 @@ export default function Game() {
 
   function jumpTo(nextMove) {
     setCurrentMove(nextMove);
+  }
+
+  function handleRestart() {
+    setHistory([Array(9).fill(null)]);
+    setCurrentMove(0);
   }
 
   const moves = history.map((squares, move) => {
@@ -90,7 +100,12 @@ export default function Game() {
     <div className="game">
       <h1 className="game-title">TIC TAC TOE</h1>
       <div className="game-board">
-        <Board xIsNext={xIsNext} squares={currentSquares} onPlay={handlePlay} />
+        <Board
+          xIsNext={xIsNext}
+          squares={currentSquares}
+          onPlay={handlePlay}
+          onRestart={handleRestart}
+        />
       </div>
       <div className="game-info">
         <div className="moves">{moves}</div>
